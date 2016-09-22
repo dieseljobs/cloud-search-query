@@ -10,9 +10,17 @@
     "require": {
       "aws/aws-sdk-php": "^3.19"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^5.5"
+    },
     "autoload": {
         "psr-4": {
             "AaronKaz\\CloudSearchQuery\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AaronKaz\\CloudSearchQuery\\Test\\": "tests"
         }
     }
 }
