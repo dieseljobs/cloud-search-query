@@ -18,6 +18,17 @@ class CloudSearchQueryResults
         $this->awsResult = $result;
     }
 
+    public function __toString()
+    {
+        $arr = [
+            'status' => $this->status,
+            'found'  => $this->found,
+            'start'  => $this->start,
+            'hits'   => $this->hits
+        ];
+        return json_encode($arr);
+    }
+
     public function map()
     {
         $this->status = $this->awsResult['@metadata']['statusCode'];
