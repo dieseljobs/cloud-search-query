@@ -7,22 +7,32 @@ use Aws\CloudSearchDomain\CloudSearchDomainClient;
 class CloudSearchQuery
 {
 
+    /**
+     * CloudSearchDomainClient factory instance
+     *
+     * @var Aws\CloudSearchDomain\CloudSearchDomainClient
+     */
     private $client;
 
     /**
-     * Our builder object
+     * Our default builder object instance
      *
      * @var StructuredQueryBuilder
      */
     private $builder;
 
     /**
-     * Query results
+     * Query results object instance
      *
      * @var CloudSearchQueryResults
      */
     private $results;
 
+    /**
+     * Store encountered error
+     *
+     * @var string
+     */
     public $error;
 
     /**
@@ -43,52 +53,142 @@ class CloudSearchQuery
         $this->builder = new StructuredQueryBuilder();
     }
 
+    /**
+     * Alias function to our builder object
+     * Set size property of query
+     *
+     * @param  int $value
+     * @return this
+     */
     public function size($value)
     {
-        $this->builder->setSize($value);
-        return $this;
-    }
-
-    public function start($value)
-    {
-        $this->builder->setStart($value);
-        return $this;
-    }
-
-    public function returnFields($value)
-    {
-        $this->builder->setReturnFields($value);
+        $this->builder->size($value);
         return $this;
     }
 
     /**
-     * Method to query for phrase
+     * Alias function to our builder object
+     * Set start property of query
      *
-     * @param  string $phrase
+     * @param  int $value
+     * @return this
+     */
+    public function start($value)
+    {
+        $this->builder->start($value);
+        return $this;
+    }
+
+    /**
+     * Alias function to our builder object
+     * Set return fields property of query
+     *
+     * @param  string $value
+     * @return this
+     */
+    public function returnFields($value)
+    {
+        $this->builder->returnFields($value);
+        return $this;
+    }
+
+    /**
+     * Alias function to our builder object
+     * Create a phrase query
+     *
+     * @param  string $value
+     * @param  string $field
+     * @param  int    $boost
      * @return this
      */
     public function phrase($value, $field = null, $boost = null)
     {
-        $this->builder->addPhrase($value, $field, $boost);
+        $this->builder->phrase($value, $field, $boost);
         return $this;
     }
 
+    /**
+     * Alias function to our builder object
+     * Create a term query
+     *
+     * @param  string $value
+     * @param  string $field
+     * @param  int    $boost
+     * @return this
+     */
     public function term($value, $field = null, $boost = null)
     {
-        $this->builder->addTerm($value, $field, $boost);
+        $this->builder->term($value, $field, $boost);
         return $this;
     }
 
+    /**
+     * Alias function to our builder object
+     * Create a prefix query
+     *
+     * @param  string $value
+     * @param  string $field
+     * @param  int    $boost
+     * @return this
+     */
     public function prefix($value, $field = null, $boost = null)
     {
-        $this->builder->addPrefix($value, $field, $boost);
+        $this->builder->prefix($value, $field, $boost);
         return $this;
     }
 
+    /**
+     * Alias function to our builder object
+     * Create a range query
+     *
+     * @param  string $value
+     * @param  string|int $min
+     * @param  string|int $max
+     * @return this
+     */
     public function range($field, $min, $max = null)
     {
-      $this->builder->addRange($field, $min, $max);
-      return $this;
+        $this->builder->range($field, $min, $max);
+        return $this;
+    }
+
+    /**
+     * Alias function to our builder object
+     * Create an 'and' wrapped query block
+     *
+     * @param  func $block
+     * @return this
+     */
+    public function and($block)
+    {
+        $this->builder->and($block);
+        return $this;
+    }
+
+    /**
+     * Alias function to our builder object
+     * Create an 'or' wrapped query block
+     *
+     * @param  func $block
+     * @return this
+     */
+    public function or($block)
+    {
+        $this->builder->or($block);
+        return $this;
+    }
+
+    /**
+     * Alias function to our builder object
+     * Create a 'not' wrapped query block
+     *
+     * @param  func $block
+     * @return this
+     */
+    public function not($block)
+    {
+        $this->builder->not($block);
+        return $this;
     }
 
     /**
@@ -100,7 +200,7 @@ class CloudSearchQuery
     public function get()
     {
         $request = $this->builder->buildStructuredQuery();
-        var_dump($request);
+        //var_dump($request);
         try {
             $response = $this->client->search($request);
         } catch (CloudSearchDomainException $e) {

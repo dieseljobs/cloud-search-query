@@ -13,7 +13,7 @@ class StructuredQueryBuilder {
     ];
     private $size = 10; // default per page
     private $start = 0; // default offset
-    private $query = [];
+    public $query = [];
     private $returnFields;
 
     public function __construct()
@@ -21,22 +21,25 @@ class StructuredQueryBuilder {
 
     }
 
-    public function setSize($size)
+    public function size($size)
     {
         $this->size = $size;
+        return $this;
     }
 
-    public function setStart($start)
+    public function start($start)
     {
         $this->start = $start;
+        return $this;
     }
 
-    public function setReturnFields($returnFields)
+    public function returnFields($returnFields)
     {
         $this->returnFields = $returnFields;
+        return $this;
     }
 
-    public function addPhrase($value, $field = null, $boost = null)
+    public function phrase($value, $field = null, $boost = null)
     {
         $phrase = "(phrase ";
         if ($field) {
@@ -47,9 +50,10 @@ class StructuredQueryBuilder {
         }
         $phrase .= "'{$value}')";
         $this->query[] = $phrase;
+        return $this;
     }
 
-    public function addTerm($value, $field = null, $boost = null)
+    public function term($value, $field = null, $boost = null)
     {
         $term = "(term ";
         if ($field) {
@@ -60,9 +64,10 @@ class StructuredQueryBuilder {
         }
         $term .= "'{$value}')";
         $this->query[] = $term;
+        return $this;
     }
 
-    public function addPrefix($value, $field = null, $boost = null)
+    public function prefix($value, $field = null, $boost = null)
     {
         $prefix = "(prefix ";
         if ($field) {
@@ -73,9 +78,10 @@ class StructuredQueryBuilder {
         }
         $prefix .= "'{$value}')";
         $this->query[] = $prefix;
+        return $this;
     }
 
-    public function addRange($field, $min, $max)
+    public function range($field, $min, $max)
     {
         $range = "(range field={$field} ";
         if ($min and !$max) {
@@ -89,6 +95,34 @@ class StructuredQueryBuilder {
         }
         $range .= "{$value})";
         $this->query[] = $range;
+        return $this;
+    }
+
+    public function and($block)
+    {
+        $builder = new $this;
+        $block($builder);
+        $and = "(and ".implode('', $builder->query).")";
+        $this->query[] = $and;
+        return $this;
+    }
+
+    public function or($block)
+    {
+        $builder = new $this;
+        $block($builder);
+        $or = "(or ".implode('', $builder->query).")";
+        $this->query[] = $or;
+        return $this;
+    }
+
+    public function not($block)
+    {
+        $builder = new $this;
+        $block($builder);
+        $not = "(not ".implode('', $builder->query).")";
+        $this->query[] = $not;
+        return $this;
     }
 
     public function buildStructuredQuery()
