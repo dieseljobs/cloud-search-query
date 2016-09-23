@@ -1,5 +1,6 @@
 {
     "name": "aaron-kaz/cloud-search-query",
+    "version": "1.0.1",
     "description": "An ORM-like wrapper for building AWS CloudSearch structured queries",
     "authors": [
         {
