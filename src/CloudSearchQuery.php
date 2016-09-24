@@ -299,23 +299,36 @@ class CloudSearchQuery
      * @param  integer $radius
      * @return this
      */
-    public function latlon($field, $lat, $lon, $radius = 50)
+    public function latlon($field, $lat, $lon, $radius = 50, $addExpr = false)
     {
-        $this->builder->latlon($field, $lat, $lon, $radius);
+        $this->builder->latlon($field, $lat, $lon, $radius, $addExpr);
         return $this;
     }
 
     /**
      * Alias to set builder expression
-     * 
+     *
      * @param  string $accessor
      * @param  string $expression
      * @return this
      */
     public function expr($accessor, $expression)
     {
-      $this->builder->expr($accessor, $expression);
-      return $this;
+        $this->builder->expr($accessor, $expression);
+        return $this;
+    }
+
+    /**
+     * Alias to build distance expression
+     *
+     * @param string $field the cloudsearch latlon field name
+     * @param string $lat
+     * @param string $lon
+     */
+    public function addDistanceExpr($field, $lat, $lon)
+    {
+        $this->builder->addDistanceExpr($field, $lat, $lon);
+        return $this;
     }
 
     /**
@@ -354,7 +367,7 @@ class CloudSearchQuery
     public function get()
     {
         $request = $this->builder->buildStructuredQuery();
-        var_dump($request);
+        //var_dump($request);
         try {
             $response = $this->client->search($request);
         } catch (CloudSearchDomainException $e) {

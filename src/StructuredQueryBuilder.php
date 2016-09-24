@@ -230,7 +230,7 @@ class StructuredQueryBuilder {
         return $this;
     }
 
-    public function latlon($field, $lat, $lon, $radius = 50)
+    public function latlon($field, $lat, $lon, $radius = 50, $addExpr = false)
     {
         // upper left bound
         $lat1 = $lat + ($radius/69);
@@ -244,12 +244,26 @@ class StructuredQueryBuilder {
         $min = "'{$lat1},{$lon1}'";
         $max = "'{$lat2},{$lon2}'";
         $this->filterRange($field, $min, $max);
+        if ($addExpr) {
+            $this->addDistanceExpr($field, $lat, $lon);
+        }
         return $this;
     }
 
     public function expr($accessor, $expression)
     {
         $this->expressions[$accessor] = $expression;
+    }
+
+    public function addDistanceExpr($field, $lat, $lon)
+    {
+        $expression = "haversin(".
+          "{$lat},".
+          "{$lon},".
+          "{$field}.latitude,".
+          "{$field}.longitude)";
+        $this->expr("distance", $expression);
+        return $this;
     }
 
     public function facet($field, $sort = "bucket", $size = 10)

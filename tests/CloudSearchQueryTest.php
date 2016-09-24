@@ -38,7 +38,7 @@ class CloudSearchQueryTest extends \PHPUnit_Framework_TestCase
         $query = new CloudSearchQuery($endpoint);
         $query->phrase('ford')->facet('make', 'count')->facet('model_family');
         $results = $query->get();
-        var_dump($results->facets);
+        //var_dump($results->facets);
         $this->assertEquals('200', $results->status);
         $this->assertEquals(true, is_array($results->facets));
     }
@@ -49,14 +49,9 @@ class CloudSearchQueryTest extends \PHPUnit_Framework_TestCase
         $query = new CloudSearchQuery($endpoint);
         $lat = '34.707731';
         $lon = '-89.906631';
-        $expression = "haversin(".
-            "{$lat},".
-            "{$lon},".
-            "latlon.latitude,".
-            "latlon.longitude)";
         $query->phrase('ford')
-              ->latlon('latlon', $lat, $lon)
-              ->expr("distance", $expression);
+              ->latlon('latlon', $lat, $lon, 50, true)
+              ->sort('distance', 'asc');
         $results = $query->get();
         $this->assertEquals('200', $results->status);
     }
