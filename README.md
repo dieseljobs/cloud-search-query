@@ -46,7 +46,7 @@ use the `get()` method to submit query and retrieve results from AWS.  Use prope
 
 ## Search Query Operators and Nested Queries ##
 You can use the `and`, `or`, and `not` operators to build compound and nested queries.  
-The corresponding `and()`, `or()`, and `not()` methods expect a closure as their argument passing in a new StructuredQueryBuilder instance.
+The corresponding `and()`, `or()`, and `not()` methods expect a closure as their argument.
 You can chain all available methods as well nest more subqueries inside of closures.
 
     $query->or(function($builder) {
