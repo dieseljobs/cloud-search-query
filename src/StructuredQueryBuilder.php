@@ -18,13 +18,25 @@ class StructuredQueryBuilder {
     ];
     private $size = 10; // default per page
     private $start = 0; // default offset
-    public $query = [];
-    public $filterQuery = [];
+    private $query = [];
+    private $filterQuery = [];
+    private $facets = [];
     private $returnFields;
+    private $sort;
 
     public function __construct()
     {
 
+    }
+
+    public function getQuery()
+    {
+        return $this->query;
+    }
+
+    public function getFilterQuery()
+    {
+        return $this->filterQuery;
     }
 
     public function size($size)
@@ -108,7 +120,7 @@ class StructuredQueryBuilder {
     {
         $builder = new $this;
         $block($builder);
-        $and = "(and ".implode('', $builder->query).")";
+        $and = "(and ".implode('', $builder->getQuery()).")";
         $this->query[] = $and;
         return $this;
     }
@@ -117,7 +129,7 @@ class StructuredQueryBuilder {
     {
         $builder = new $this;
         $block($builder);
-        $or = "(or ".implode('', $builder->query).")";
+        $or = "(or ".implode('', $builder->getQuery()).")";
         $this->query[] = $or;
         return $this;
     }
@@ -126,7 +138,7 @@ class StructuredQueryBuilder {
     {
         $builder = new $this;
         $block($builder);
-        $not = "(not ".implode('', $builder->query).")";
+        $not = "(not ".implode('', $builder->getQuery()).")";
         $this->query[] = $not;
         return $this;
     }
@@ -194,7 +206,7 @@ class StructuredQueryBuilder {
     {
         $builder = new $this;
         $block($builder);
-        $and = "(and ".implode('', $builder->filterQuery).")";
+        $and = "(and ".implode('', $builder->getFilterQuery()).")";
         $this->filterQuery[] = $and;
         return $this;
     }
@@ -203,7 +215,7 @@ class StructuredQueryBuilder {
     {
         $builder = new $this;
         $block($builder);
-        $or = "(or ".implode('', $builder->filterQuery).")";
+        $or = "(or ".implode('', $builder->getFilterQuery()).")";
         $this->filterQuery[] = $or;
         return $this;
     }
@@ -212,7 +224,7 @@ class StructuredQueryBuilder {
     {
         $builder = new $this;
         $block($builder);
-        $not = "(not ".implode('', $builder->filterQuery).")";
+        $not = "(not ".implode('', $builder->getFilterQuery()).")";
         $this->filterQuery[] = $not;
         return $this;
     }
@@ -234,6 +246,20 @@ class StructuredQueryBuilder {
         return $this;
     }
 
+    public function facet($field, $sort = "bucket", $size = 10)
+    {
+        $this->facets[$field] = [
+            'sort' => $sort,
+            'size' => $size
+        ];
+    }
+
+    public function sort($field, $direction = 'asc')
+    {
+        $this->sort = "{$field} {$direction}";
+        return $this;
+    }
+
     public function buildStructuredQuery()
     {
         $structuredQuery;
@@ -245,6 +271,12 @@ class StructuredQueryBuilder {
         }
         if ($this->filterQuery) {
             $structuredQuery['filterQuery'] = $this->buildFilterQuery();
+        }
+        if ($this->facets) {
+            $structuredQuery['facet'] = json_encode($this->facets);
+        }
+        if ($this->sort) {
+            $structuredQuery['sort'] = $this->sort;
         }
         return $structuredQuery;
     }

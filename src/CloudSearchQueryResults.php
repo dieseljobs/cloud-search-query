@@ -12,6 +12,7 @@ class CloudSearchQueryResults
     public $found;
     public $start;
     public $hits;
+    public $facets;
 
     public function __construct(Result $result)
     {
@@ -24,7 +25,8 @@ class CloudSearchQueryResults
             'status' => $this->status,
             'found'  => $this->found,
             'start'  => $this->start,
-            'hits'   => $this->hits
+            'hits'   => $this->hits,
+            'facets' => $this->facets
         ];
         return json_encode($arr);
     }
@@ -36,6 +38,10 @@ class CloudSearchQueryResults
           $this->found = $this->awsResult['hits']['found'];
           $this->start = $this->awsResult['hits']['start'];
           $this->mapHits();
+          if ($this->awsResult['facets']) {
+              // we should map these out better
+              $this->facets = $this->awsResult['facets'];
+          }
         }
         return $this;
     }

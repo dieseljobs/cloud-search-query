@@ -32,4 +32,15 @@ class CloudSearchQueryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('200', $results->status);
     }
 
+    public function testItSearchesWithFacets()
+    {
+        $endpoint = 'http://search-ueguide-s4e6zhkw6sg5jujhd6da5wrscu.us-east-1.cloudsearch.amazonaws.com';
+        $query = new CloudSearchQuery($endpoint);
+        $query->phrase('ford')->facet('make', 'count')->facet('model_family');
+        $results = $query->get();
+        var_dump($results->facets);
+        $this->assertEquals('200', $results->status);
+        $this->assertEquals(true, is_array($results->facets));
+    }
+
 }

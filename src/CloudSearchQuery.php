@@ -292,7 +292,7 @@ class CloudSearchQuery
 
     /**
      * Alias function to build a location range filter
-     * 
+     *
      * @param  string  $field
      * @param  string  $lat
      * @param  string  $lon
@@ -301,7 +301,34 @@ class CloudSearchQuery
      */
     public function latlon($field, $lat, $lon, $radius = 50)
     {
-        $this->builder->latlon($field, $lat, $lon, $radius = 50);
+        $this->builder->latlon($field, $lat, $lon, $radius);
+        return $this;
+    }
+
+    /**
+     * Alias function to build return facets array
+     *
+     * @param  string  $field
+     * @param  string  $sort
+     * @param  integer $size
+     * @return this
+     */
+    public function facet($field, $sort = "bucket", $size = 10)
+    {
+        $this->builder->facet($field, $sort, $size);
+        return $this;
+    }
+
+    /**
+     * Alias function to sort query
+     * 
+     * @param  string $field
+     * @param  string $direction
+     * @return this
+     */
+    public function sort($field, $direction = 'asc')
+    {
+        $this->builder->sort($field, $direction);
         return $this;
     }
 
