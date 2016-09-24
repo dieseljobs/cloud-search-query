@@ -192,6 +192,120 @@ class CloudSearchQuery
     }
 
     /**
+     * Alias function to our builder object
+     * Create a phrase filter query
+     *
+     * @param  string $value
+     * @param  string $field
+     * @param  int    $boost
+     * @return this
+     */
+    public function filterPhrase($value, $field = null, $boost = null)
+    {
+        $this->builder->filterPhrase($value, $field, $boost);
+        return $this;
+    }
+
+    /**
+     * Alias function to our builder object
+     * Create a term filter query
+     *
+     * @param  string $value
+     * @param  string $field
+     * @param  int    $boost
+     * @return this
+     */
+    public function filterTerm($value, $field = null, $boost = null)
+    {
+        $this->builder->filterTerm($value, $field, $boost);
+        return $this;
+    }
+
+    /**
+     * Alias function to our builder object
+     * Create a prefix filter query
+     *
+     * @param  string $value
+     * @param  string $field
+     * @param  int    $boost
+     * @return this
+     */
+    public function filterPrefix($value, $field = null, $boost = null)
+    {
+        $this->builder->filterPrefix($value, $field, $boost);
+        return $this;
+    }
+
+    /**
+     * Alias function to our builder object
+     * Create a range filter query
+     *
+     * @param  string $value
+     * @param  string|int $min
+     * @param  string|int $max
+     * @return this
+     */
+    public function filterRange($field, $min, $max = null)
+    {
+        $this->builder->filterRange($field, $min, $max);
+        return $this;
+    }
+
+    /**
+     * Alias function to our builder object
+     * Create an 'and' wrapped filter query block
+     *
+     * @param  func $block
+     * @return this
+     */
+    public function filterAnd($block)
+    {
+        $this->builder->filterAnd($block);
+        return $this;
+    }
+
+    /**
+     * Alias function to our builder object
+     * Create an 'or' wrapped filter query block
+     *
+     * @param  func $block
+     * @return this
+     */
+    public function filterOr($block)
+    {
+        $this->builder->filterOr($block);
+        return $this;
+    }
+
+    /**
+     * Alias function to our builder object
+     * Create a 'not' wrapped filter query block
+     *
+     * @param  func $block
+     * @return this
+     */
+    public function filterNot($block)
+    {
+        $this->builder->filterNot($block);
+        return $this;
+    }
+
+    /**
+     * Alias function to build a location range filter
+     * 
+     * @param  string  $field
+     * @param  string  $lat
+     * @param  string  $lon
+     * @param  integer $radius
+     * @return this
+     */
+    public function latlon($field, $lat, $lon, $radius = 50)
+    {
+        $this->builder->latlon($field, $lat, $lon, $radius = 50);
+        return $this;
+    }
+
+    /**
      * Method to trigger request-response
      * Returns a new instance of CloudSearchQueryResults
      *
@@ -200,7 +314,7 @@ class CloudSearchQuery
     public function get()
     {
         $request = $this->builder->buildStructuredQuery();
-        //var_dump($request);
+        var_dump($request);
         try {
             $response = $this->client->search($request);
         } catch (CloudSearchDomainException $e) {

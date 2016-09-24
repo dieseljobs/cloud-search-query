@@ -7,7 +7,7 @@ use AaronKaz\CloudSearchQuery\CloudSearchQuery;
 class CloudSearchQueryTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testItSearchesWithPhrase()
+    public function testItSearchesWithNestedPhrase()
     {
         $endpoint = 'http://search-ueguide-s4e6zhkw6sg5jujhd6da5wrscu.us-east-1.cloudsearch.amazonaws.com';
         $query = new CloudSearchQuery($endpoint);
@@ -23,5 +23,13 @@ class CloudSearchQueryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('200', $results->status);
     }
 
+    public function testItSearchesWithLatLon()
+    {
+        $endpoint = 'http://search-ueguide-s4e6zhkw6sg5jujhd6da5wrscu.us-east-1.cloudsearch.amazonaws.com';
+        $query = new CloudSearchQuery($endpoint);
+        $query->phrase('ford')->latlon('latlon', '34.707731', '-89.906631');
+        $results = $query->get();
+        $this->assertEquals('200', $results->status);
+    }
 
 }
