@@ -306,6 +306,19 @@ class CloudSearchQuery
     }
 
     /**
+     * Alias to set builder expression
+     * 
+     * @param  string $accessor
+     * @param  string $expression
+     * @return this
+     */
+    public function expr($accessor, $expression)
+    {
+      $this->builder->expr($accessor, $expression);
+      return $this;
+    }
+
+    /**
      * Alias function to build return facets array
      *
      * @param  string  $field
@@ -321,7 +334,7 @@ class CloudSearchQuery
 
     /**
      * Alias function to sort query
-     * 
+     *
      * @param  string $field
      * @param  string $direction
      * @return this

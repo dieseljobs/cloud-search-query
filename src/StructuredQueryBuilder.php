@@ -21,6 +21,7 @@ class StructuredQueryBuilder {
     private $query = [];
     private $filterQuery = [];
     private $facets = [];
+    private $expressions = [];
     private $returnFields;
     private $sort;
 
@@ -246,6 +247,11 @@ class StructuredQueryBuilder {
         return $this;
     }
 
+    public function expr($accessor, $expression)
+    {
+        $this->expressions[$accessor] = $expression;
+    }
+
     public function facet($field, $sort = "bucket", $size = 10)
     {
         $this->facets[$field] = [
@@ -271,6 +277,9 @@ class StructuredQueryBuilder {
         }
         if ($this->filterQuery) {
             $structuredQuery['filterQuery'] = $this->buildFilterQuery();
+        }
+        if ($this->expressions) {
+            $structuredQuery['expr'] = json_encode($this->expressions);
         }
         if ($this->facets) {
             $structuredQuery['facet'] = json_encode($this->facets);
