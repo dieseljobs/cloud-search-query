@@ -358,6 +358,41 @@ class CloudSearchQuery
         return $this;
     }
 
+    public function getSize()
+    {
+        return $this->builder->size;
+    }
+
+    public function getStart()
+    {
+        return $this->builder->start;
+    }
+
+    public function getQuery()
+    {
+        return $this->builder->query;
+    }
+
+    public function getFilterQuery()
+    {
+        return $this->builder->filterQuery;
+    }
+
+    public function getFacets()
+    {
+        return $this->builder->facets;
+    }
+
+    public function getExpressions()
+    {
+        return $this->builder->expressions;
+    }
+
+    public function getReturnFields()
+    {
+        return $this->builder->returnFields;
+    }
+
     /**
      * Method to trigger request-response
      * Returns a new instance of CloudSearchQueryResults

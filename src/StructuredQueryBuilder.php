@@ -7,23 +7,17 @@ use Aws\CloudSearchDomain\Exception\CloudSearchDomainException;
 
 class StructuredQueryBuilder {
 
-    /*
-(and latlon:['43.084720181159,-72.039544900521','41.635444818841,-70.078215299479'] ctime: [1472132521,1474724521])
-
-{"distance":"haversin(42.3600825,-71.05888010000001,latlon.latitude,latlon.longitude)"}
-     */
-
-    private $structuredQuery = [
+    public $structuredQuery = [
         'queryParser' => 'structured'
     ];
-    private $size = 10; // default per page
-    private $start = 0; // default offset
-    private $query = [];
-    private $filterQuery = [];
-    private $facets = [];
-    private $expressions = [];
-    private $returnFields;
-    private $sort;
+    public $size = 10; // default per page
+    public $start = 0; // default offset
+    public $query = [];
+    public $filterQuery = [];
+    public $facets = [];
+    public $expressions = [];
+    public $returnFields;
+    public $sort;
 
     public function __construct()
     {
@@ -300,6 +294,9 @@ class StructuredQueryBuilder {
         }
         if ($this->sort) {
             $structuredQuery['sort'] = $this->sort;
+        }
+        if ($this->returnFields) {
+            $structuredQuery['returnFields'] = $this->returnFields;
         }
         return $structuredQuery;
     }
