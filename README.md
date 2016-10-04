@@ -6,25 +6,12 @@ CloudSearchQuery is currently a repository package only.  In `composer.json` add
 
     "repositories": [
       {
-          "type": "package",
-          "package": {
-              "name": "aaronkaz/cloud-search-query",
-              "version": "1.0.2",
-              "source": {
-                  "url": "https://github.com/aaronkaz/cloud-search-query.git",
-                  "type": "git",
-                  "reference": "master"
-              },
-              "autoload": {
-                  "psr-4": {
-                      "AaronKaz\\CloudSearchQuery\\": "src"
-                  }
-              }
-          }
+        "type": "vcs",
+        "url": "https://github.com/aaronkaz/cloud-search-query.git"
       }
     ],
     "require": {
-        "aaronkaz/cloud-search-query": "^1.0"
+        "aaron-kaz/cloud-search-query": "dev-master"
     },
     
 
