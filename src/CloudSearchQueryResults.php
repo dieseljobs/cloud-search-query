@@ -53,8 +53,10 @@ class CloudSearchQueryResults
             $mappedHit = [
                 'id' => $hit['id']
             ];
-            foreach($hit['fields'] as $key => $field) {
-                $mappedHit[$key] = $field[0];
+            if (isset($hit['fields'])) {
+                foreach($hit['fields'] as $key => $field) {
+                    $mappedHit[$key] = $field[0];
+                }
             }
             $hits[] = $mappedHit;
         }
