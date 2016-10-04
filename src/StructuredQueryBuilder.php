@@ -296,7 +296,7 @@ class StructuredQueryBuilder {
             $structuredQuery['sort'] = $this->sort;
         }
         if ($this->returnFields) {
-            $structuredQuery['returnFields'] = $this->returnFields;
+            $structuredQuery['return'] = $this->returnFields;
         }
         return $structuredQuery;
     }
