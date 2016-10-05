@@ -159,9 +159,9 @@ class CloudSearchQuery
      * @param  func $block
      * @return this
      */
-    public function and($block)
+    public function qAnd($block)
     {
-        $this->builder->and($block);
+        $this->builder->qAnd($block);
         return $this;
     }
 
@@ -172,9 +172,9 @@ class CloudSearchQuery
      * @param  func $block
      * @return this
      */
-    public function or($block)
+    public function qOr($block)
     {
-        $this->builder->or($block);
+        $this->builder->qOr($block);
         return $this;
     }
 
@@ -185,9 +185,9 @@ class CloudSearchQuery
      * @param  func $block
      * @return this
      */
-    public function not($block)
+    public function qNot($block)
     {
-        $this->builder->not($block);
+        $this->builder->qNot($block);
         return $this;
     }
 

@@ -13,7 +13,7 @@ class CloudSearchQueryTest extends \PHPUnit_Framework_TestCase
         $query = new CloudSearchQuery($endpoint);
         $query->size(10)
               ->start(0)
-              ->or(function($builder) {
+              ->qOr(function($builder) {
                 $builder->phrase('ford')
                         ->phrase('truck');
               })

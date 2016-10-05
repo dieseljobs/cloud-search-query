@@ -111,7 +111,7 @@ class StructuredQueryBuilder {
         return $this;
     }
 
-    public function and($block)
+    public function qAnd($block)
     {
         $builder = new $this;
         $block($builder);
@@ -120,7 +120,7 @@ class StructuredQueryBuilder {
         return $this;
     }
 
-    public function or($block)
+    public function qOr($block)
     {
         $builder = new $this;
         $block($builder);
@@ -129,7 +129,7 @@ class StructuredQueryBuilder {
         return $this;
     }
 
-    public function not($block)
+    public function qNot($block)
     {
         $builder = new $this;
         $block($builder);
