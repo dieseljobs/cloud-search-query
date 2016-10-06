@@ -1,8 +1,8 @@
 <?php
 
-namespace AaronKaz\CloudSearchQuery;
+namespace Kazak\CloudSearchQuery;
 
-use AaronKaz\CloudSearchQuery\CloudSearchQuery;
+use Kazak\CloudSearchQuery\CloudSearchQuery;
 
 class CloudSearchQueryTest extends \PHPUnit_Framework_TestCase
 {

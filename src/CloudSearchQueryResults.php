@@ -1,6 +1,6 @@
 <?php
 
-namespace Aaronkaz\CloudSearchQuery;
+namespace Kazak\CloudSearchQuery;
 
 use Aws\Result;
 

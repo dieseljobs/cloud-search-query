@@ -1,5 +1,5 @@
 {
-    "name": "aaron-kaz/cloud-search-query",
+    "name": "kazak/cloud-search-query",
     "description": "An ORM-like wrapper for building AWS CloudSearch structured queries",
     "authors": [
         {
@@ -16,12 +16,12 @@
     },
     "autoload": {
         "psr-4": {
-            "AaronKaz\\CloudSearchQuery\\": "src"
+            "Kazak\\CloudSearchQuery\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "AaronKaz\\CloudSearchQuery\\Test\\": "tests"
+            "Kazak\\CloudSearchQuery\\Test\\": "tests"
         }
     },
     "extra": {

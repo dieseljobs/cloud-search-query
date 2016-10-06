@@ -1,6 +1,6 @@
 <?php
 
-namespace AaronKaz\CloudSearchQuery;
+namespace Kazak\CloudSearchQuery;
 
 use Aws\CloudSearchDomain\CloudSearchDomainClient;
 use Aws\CloudSearchDomain\Exception\CloudSearchDomainException;
