@@ -358,6 +358,12 @@ class CloudSearchQuery
         return $this;
     }
 
+    public function stats($field)
+    {
+        $this->builder->stats($field);
+        return $this;
+    }
+
     public function getSize()
     {
         return $this->builder->size;

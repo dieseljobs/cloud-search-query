@@ -13,6 +13,7 @@ class CloudSearchQueryResults
     public $start;
     public $hits;
     public $facets;
+    public $stats;
 
     public function __construct(Result $result)
     {
@@ -41,6 +42,9 @@ class CloudSearchQueryResults
           if ($this->awsResult['facets']) {
               // we should map these out better
               $this->facets = $this->awsResult['facets'];
+          }
+          if ($this->awsResult['stats']) {
+              $this->stats = $this->awsResult['stats'];
           }
         }
         return $this;
