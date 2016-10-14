@@ -269,6 +269,13 @@ class StructuredQueryBuilder {
         ];
     }
 
+    public function facetBuckets($field, $buckets)
+    {
+        $this->facets[$field] = [
+            'buckets' => $buckets
+        ];
+    }
+
     public function sort($field, $direction = 'asc')
     {
         $this->sort = "{$field} {$direction}";

@@ -346,6 +346,19 @@ class CloudSearchQuery
     }
 
     /**
+     * Alias function to build return facets with explicit buckets
+     *
+     * @param  string $field
+     * @param  Array $buckets
+     * @return this
+     */
+    public function facetBuckets($field, $buckets)
+    {
+        $this->builder->facetBuckets($field, $buckets);
+        return $this;
+    }
+
+    /**
      * Alias function to sort query
      *
      * @param  string $field
