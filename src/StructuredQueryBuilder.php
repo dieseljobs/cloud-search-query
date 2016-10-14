@@ -269,10 +269,11 @@ class StructuredQueryBuilder {
         ];
     }
 
-    public function facetBuckets($field, $buckets)
+    public function facetBuckets($field, $buckets, $method = "filter")
     {
         $this->facets[$field] = [
-            'buckets' => $buckets
+            'buckets' => $buckets,
+            'method'  => $method
         ];
     }
 

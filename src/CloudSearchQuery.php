@@ -352,9 +352,9 @@ class CloudSearchQuery
      * @param  Array $buckets
      * @return this
      */
-    public function facetBuckets($field, $buckets)
+    public function facetBuckets($field, $buckets, $method = "filter")
     {
-        $this->builder->facetBuckets($field, $buckets);
+        $this->builder->facetBuckets($field, $buckets, $method);
         return $this;
     }
 
