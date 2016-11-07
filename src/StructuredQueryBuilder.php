@@ -16,6 +16,7 @@ class StructuredQueryBuilder {
     public $filterQuery = [];
     public $facets = [];
     public $expressions = [];
+    public $stats;
     public $returnFields;
     public $sort;
 
@@ -295,10 +296,23 @@ class StructuredQueryBuilder {
         ];
     }
 
+    public function facetBuckets($field, $buckets, $method = "filter")
+    {
+        $this->facets[$field] = [
+            'buckets' => $buckets,
+            'method'  => $method
+        ];
+    }
+
     public function sort($field, $direction = 'asc')
     {
         $this->sort = "{$field} {$direction}";
         return $this;
+    }
+
+    public function stats($field)
+    {
+        $this->stats[] = $field;
     }
 
     public function buildStructuredQuery()
@@ -324,6 +338,14 @@ class StructuredQueryBuilder {
         }
         if ($this->returnFields) {
             $structuredQuery['return'] = $this->returnFields;
+        }
+        if ($this->stats) {
+            $stats = [];
+            foreach($this->stats as $statField) {
+                $stats[] = "\"{$statField}\":{}";
+            }
+            $stats = "{".implode(',',$stats)."}";
+            $structuredQuery['stats'] = $stats;
         }
         return $structuredQuery;
     }

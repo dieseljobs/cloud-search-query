@@ -73,4 +73,28 @@ class CloudSearchQueryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('200', $results->status);
     }
 
+    public function testItSearchesWithStats()
+    {
+        $endpoint = 'http://search-ueguide-s4e6zhkw6sg5jujhd6da5wrscu.us-east-1.cloudsearch.amazonaws.com';
+        $query = new CloudSearchQuery($endpoint);
+        $query->phrase('ford')
+                ->facet('year', 'count')
+                ->stats('year');
+        $results = $query->get();
+        $this->assertEquals('200', $results->status);
+        $this->assertEquals(true, is_array($results->stats));
+
+    }
+
+    public function testItSearchesWithFacetBuckets()
+    {
+        $endpoint = 'http://search-ueguide-s4e6zhkw6sg5jujhd6da5wrscu.us-east-1.cloudsearch.amazonaws.com';
+        $query = new CloudSearchQuery($endpoint);
+        $query->phrase('ford')->facetBuckets('year', ["[1970,1979]","[1980,1989]","[1990,1999]"]);
+        $results = $query->get();
+        //var_dump($results->facets);
+        $this->assertEquals('200', $results->status);
+        $this->assertEquals(true, is_array($results->facets));
+    }
+
 }
