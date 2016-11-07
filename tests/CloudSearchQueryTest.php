@@ -7,10 +7,27 @@ use Kazak\CloudSearchQuery\CloudSearchQuery;
 class CloudSearchQueryTest extends \PHPUnit_Framework_TestCase
 {
 
+    private $endpoint = 'http://search-ueguide-s4e6zhkw6sg5jujhd6da5wrscu.us-east-1.cloudsearch.amazonaws.com';
+
+    public function testItSearchesWithBreakingChars()
+    {
+        $query = new CloudSearchQuery($this->endpoint);
+        $query->term("Vander Haag's", 'seller');
+        $results = $query->get();
+        $this->assertEquals('200', $results->status);
+    }
+
+    public function testItSearchesWithNearSearch()
+    {
+        $query = new CloudSearchQuery($this->endpoint);
+        $query->near("2012 FORD F-150");
+        $results = $query->get();
+        $this->assertEquals('200', $results->status);
+    }
+
     public function testItSearchesWithNestedPhrase()
     {
-        $endpoint = 'http://search-ueguide-s4e6zhkw6sg5jujhd6da5wrscu.us-east-1.cloudsearch.amazonaws.com';
-        $query = new CloudSearchQuery($endpoint);
+        $query = new CloudSearchQuery($this->endpoint);
         $query->size(10)
               ->start(0)
               ->qOr(function($builder) {

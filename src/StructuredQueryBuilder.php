@@ -21,7 +21,20 @@ class StructuredQueryBuilder {
 
     public function __construct()
     {
+        //
+    }
 
+    public function __call($method, $args) {
+        if (!method_exists($this, $method)) {
+            throw new Exception("Method doesn't exist");
+        }
+        // escape string arguments
+        foreach($args as $key => $value) {
+            if (gettype($value) == "string") {
+                $args[$key] = addslashes($value);
+            }
+        }
+        call_user_func_array([$this, $method], $args);
     }
 
     public function getQuery()
@@ -52,7 +65,7 @@ class StructuredQueryBuilder {
         return $this;
     }
 
-    public function phrase($value, $field = null, $boost = null)
+    private function phrase($value, $field = null, $boost = null)
     {
         $phrase = "(phrase ";
         if ($field) {
@@ -66,7 +79,21 @@ class StructuredQueryBuilder {
         return $this;
     }
 
-    public function term($value, $field = null, $boost = null)
+    private function near($value, $field = null, $distance = 3)
+    {
+        $near = "(near ";
+        if ($field) {
+            $near .= "field='{$field}' ";
+        }
+        if ($distance) {
+            $near .= "distance='{$distance}' ";
+        }
+        $near .= "'{$value}')";
+        $this->query[] = $near;
+        return $this;
+    }
+
+    private function term($value, $field = null, $boost = null)
     {
         $term = "(term ";
         if ($field) {
@@ -80,7 +107,7 @@ class StructuredQueryBuilder {
         return $this;
     }
 
-    public function prefix($value, $field = null, $boost = null)
+    private function prefix($value, $field = null, $boost = null)
     {
         $prefix = "(prefix ";
         if ($field) {
@@ -138,7 +165,7 @@ class StructuredQueryBuilder {
         return $this;
     }
 
-    public function filterPhrase($value, $field = null, $boost = null)
+    private function filterPhrase($value, $field = null, $boost = null)
     {
         $phrase = "(phrase ";
         if ($field) {
@@ -152,7 +179,7 @@ class StructuredQueryBuilder {
         return $this;
     }
 
-    public function filterTerm($value, $field = null, $boost = null)
+    private function filterTerm($value, $field = null, $boost = null)
     {
         $term = "(term ";
         if ($field) {
@@ -166,7 +193,7 @@ class StructuredQueryBuilder {
         return $this;
     }
 
-    public function filterPrefix($value, $field = null, $boost = null)
+    private function filterPrefix($value, $field = null, $boost = null)
     {
         $prefix = "(prefix ";
         if ($field) {

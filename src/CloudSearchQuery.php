@@ -109,6 +109,21 @@ class CloudSearchQuery
 
     /**
      * Alias function to our builder object
+     * Create a near (sloppy) query
+     *
+     * @param  string $value
+     * @param  string $field
+     * @param  int    $distance
+     * @return this
+     */
+    public function near($value, $field = null, $distance = 3)
+    {
+        $this->builder->near($value, $field, $distance);
+        return $this;
+    }
+
+    /**
+     * Alias function to our builder object
      * Create a term query
      *
      * @param  string $value
