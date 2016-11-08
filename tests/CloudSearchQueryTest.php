@@ -25,6 +25,22 @@ class CloudSearchQueryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('200', $results->status);
     }
 
+    public function testItSearchesWithOptions()
+    {
+        $query = new CloudSearchQuery($this->endpoint);
+        $query->options('seller');
+        $query->qOr(function($builder) {
+            $term = "Gregory Poole Equipment";
+            $builder->phrase("{$term}*");
+            $builder->prefix($term);
+            $builder->near($term);
+        });
+        $query->facet('seller');
+        $results = $query->get();
+        $this->assertEquals('200', $results->status);
+        $this->assertEquals(false, empty($results->hits));
+    }
+
     public function testItSearchesWithNestedPhrase()
     {
         $query = new CloudSearchQuery($this->endpoint);

@@ -17,6 +17,7 @@ class StructuredQueryBuilder {
     public $facets = [];
     public $expressions = [];
     public $stats;
+    public $options;
     public $returnFields;
     public $sort;
 
@@ -36,6 +37,7 @@ class StructuredQueryBuilder {
             }
         }
         call_user_func_array([$this, $method], $args);
+        return $this;
     }
 
     public function getQuery()
@@ -63,6 +65,16 @@ class StructuredQueryBuilder {
     public function returnFields($returnFields)
     {
         $this->returnFields = $returnFields;
+        return $this;
+    }
+
+    public function options($options)
+    {
+        foreach(preg_split('/\s/', $options) as $field)
+        {
+            $this->options['fields'][] = $field;
+        }
+
         return $this;
     }
 
@@ -338,6 +350,9 @@ class StructuredQueryBuilder {
         }
         if ($this->returnFields) {
             $structuredQuery['return'] = $this->returnFields;
+        }
+        if ($this->options) {
+            $structuredQuery['queryOptions'] = json_encode($this->options);
         }
         if ($this->stats) {
             $stats = [];

@@ -94,6 +94,19 @@ class CloudSearchQuery
 
     /**
      * Alias function to our builder object
+     * Set options property of query
+     *
+     * @param  string $value
+     * @return this
+     */
+    public function options($value)
+    {
+        $this->builder->options($value);
+        return $this;
+    }
+
+    /**
+     * Alias function to our builder object
      * Create a phrase query
      *
      * @param  string $value
@@ -436,7 +449,6 @@ class CloudSearchQuery
     public function get()
     {
         $request = $this->builder->buildStructuredQuery();
-        //var_dump($request);
         try {
             $response = $this->client->search($request);
         } catch (CloudSearchDomainException $e) {
