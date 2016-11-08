@@ -28,7 +28,7 @@ class CloudSearchQueryTest extends \PHPUnit_Framework_TestCase
     public function testItSearchesWithOptions()
     {
         $query = new CloudSearchQuery($this->endpoint);
-        $query->options('seller');
+        $query->options('seller, category');
         $query->qOr(function($builder) {
             $term = "Gregory Poole Equipment";
             $builder->phrase("{$term}*");

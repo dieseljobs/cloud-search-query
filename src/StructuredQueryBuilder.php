@@ -70,7 +70,7 @@ class StructuredQueryBuilder {
 
     public function options($options)
     {
-        foreach(preg_split('/\s/', $options) as $field)
+        foreach(preg_split('/,\s|,/', $options) as $field)
         {
             $this->options['fields'][] = $field;
         }
