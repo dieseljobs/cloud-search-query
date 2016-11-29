@@ -28,7 +28,7 @@ class CloudSearchQueryTest extends \PHPUnit_Framework_TestCase
     public function testItSearchesWithOptions()
     {
         $query = new CloudSearchQuery($this->endpoint);
-        $query->options('seller, category');
+        $query->options('fields', ['seller', 'category']);
         $query->qOr(function($builder) {
             $term = "Gregory Poole Equipment";
             $builder->phrase("{$term}*");
@@ -51,6 +51,21 @@ class CloudSearchQueryTest extends \PHPUnit_Framework_TestCase
                         ->phrase('truck');
               })
               ->term('National Equipment', 'seller')
+              ->range('year', '1987');
+        $results = $query->get();
+        $this->assertEquals('200', $results->status);
+    }
+
+    public function testItSearchesWithFilterQuery()
+    {
+        $query = new CloudSearchQuery($this->endpoint);
+        $query->size(10)
+              ->start(0)
+              ->filterOr(function($builder) {
+                $builder->phrase('ford', 'desc')
+                        ->phrase('truck', 'desc');
+              })
+              ->filterTerm('National Equipment', 'seller')
               ->range('year', '1987');
         $results = $query->get();
         $this->assertEquals('200', $results->status);

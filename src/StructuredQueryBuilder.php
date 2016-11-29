@@ -7,263 +7,366 @@ use Aws\CloudSearchDomain\Exception\CloudSearchDomainException;
 
 class StructuredQueryBuilder {
 
-    public $structuredQuery = [
-        'queryParser' => 'structured'
-    ];
-    public $size = 10; // default per page
-    public $start = 0; // default offset
-    public $query = [];
-    public $filterQuery = [];
-    public $facets = [];
+    /**
+     * Cursor value
+     *
+     * @var string
+     */
+    public $cursor;
+
+    /**
+     * Array of key-value pairs for custom expressions
+     *
+     * @var Array
+     */
     public $expressions = [];
-    public $stats;
+
+    /**
+     * Array of facet specifications
+     *
+     * @var Array
+     */
+    public $facets = [];
+
+    /**
+     * Content type of response
+     *
+     * @var string
+     */
+    public $format = 'json';
+
+    /**
+     * Specifies a structured query that filters the results of a search without
+     * affecting how the results are scored and sorted. You use fq in
+     * conjunction with the q parameter to filter the documents that match the
+     * constraints specified in the q parameter. Specifying a filter just
+     * controls which matching documents are included in the results, it has no
+     * effect on how they are scored and sorted.
+     *
+     * @var StructuredSearch
+     */
+    public $fq;
+
+    // FUTURE METHODS
+    //
+    //public $highlights;
+    //
+    //public $partial;
+
+    /**
+     * Format json so it's easier to read
+     *
+     * @var boolean
+     */
+    public $pretty;
+
+    /**
+     * The search criteria for the request
+     *
+     * @var StructuredSearch
+     */
+    public $q;
+
+    /**
+     * Query parser options
+     *
+     * @var Array|JSON object
+     */
     public $options;
+
+    /**
+     * Fields to return in results
+     *
+     * @var string
+     */
     public $returnFields;
+
+    /**
+     * Number results to return per page
+     *
+     * @var integer
+     */
+    public $size = 10; // default per page
+
+    /**
+     * Fields/expressions to sort by
+     *
+     * @var string
+     */
     public $sort;
 
+    /**
+     * Search results offset
+     *
+     * @var integer
+     */
+    public $start = 0; // default offset
+
+    /**
+     * Array of fields to get statistics
+     *
+     * @var Array
+     */
+    public $stats;
+
+
+    /**
+     * Create new instance
+     */
     public function __construct()
     {
-        //
+        $this->q = new StructuredSearch();
+        $this->fq = new StructuredSearch();
     }
 
-    public function __call($method, $args) {
-        if (!method_exists($this, $method)) {
-            throw new Exception("Method doesn't exist");
-        }
-        // escape string arguments
-        foreach($args as $key => $value) {
-            if (gettype($value) == "string") {
-                $args[$key] = addslashes($value);
-            }
-        }
-        call_user_func_array([$this, $method], $args);
-        return $this;
-    }
-
+    /**
+     * Alias to get structured search query
+     *
+     * @return array
+     */
     public function getQuery()
     {
-        return $this->query;
+        return $this->q->getQuery;
     }
 
+    /**
+     * Alias to get structured filter query
+     *
+     * @return array
+     */
     public function getFilterQuery()
     {
-        return $this->filterQuery;
+        return $this->fq->getQuery;
     }
 
-    public function size($size)
+    /**
+     * CURSOR
+     * Retrieves a cursor value you can use to page through large result sets.
+     * Use the size parameter to control the number of hits you want to include
+     * in each response. You can specify either the cursor or start parameter in
+     * a request, they are mutually exclusive.
+     *
+     * To get the first cursor, specify cursor=initial in your initial request.
+     * In subsequent requests, specify the cursor value returned in the hits
+     * section of the response.
+     *
+     * @param  string $cursor
+     * @return StructuredQueryBuilder
+     */
+    public function cursor($cursor = 'initial')
     {
-        $this->size = $size;
+        $this->cursor = $cursor;
         return $this;
     }
 
-    public function start($start)
+    /**
+     * EXPRESSION
+     * Defines an expression that can be used to sort results. You can also
+     * specify an expression as a return field.
+     *
+     * @param  string $accessor
+     * @param  string $expression
+     * @return StructuredQueryBuilder
+     */
+    public function expr($accessor, $expression)
     {
-        $this->start = $start;
+        $this->expressions[$accessor] = $expression;
+    }
+
+    /**
+     * FACET (sorted)
+     * Specifies a field that you want to get facet information for—FIELD is the
+     * name of the field. The specified field must be facet enabled in the
+     * domain configuration. Facet options are specified as a JSON object. If
+     * the JSON object is empty, facet.FIELD={}, facet counts are computed for
+     * all field values, the facets are sorted by facet count, and the top 10
+     * facets are returned in the results.
+     *
+     * sort specifies how you want to sort the facets in the results: bucket or
+     * count. Specify bucket to sort alphabetically or numerically by facet
+     * value (in ascending order). Specify count to sort by the facet counts
+     * computed for each facet value (in descending order).
+     *
+     * size specifies the maximum number of facets to include in the results.
+     * By default, Amazon CloudSearch returns counts for the top 10.
+     *
+     * @param  string  $field
+     * @param  string  $sort
+     * @param  integer $size
+     * @return StructuredQueryBuilder
+     */
+    public function facet($field, $sort = "bucket", $size = 10)
+    {
+        $this->facets[$field] = [
+            'sort' => $sort,
+            'size' => $size
+        ];
+    }
+
+    /**
+     * FACET (BUCKETS)
+     * specifies an array of the facet values or ranges you want to count.
+     * Buckets are returned in the order they are specified in the request. To
+     * specify a range of values, use a comma (,) to separate the upper and
+     * lower bounds and enclose the range using brackets or braces. A square
+     * bracket, [ or ], indicates that the bound is included in the range, a
+     * curly brace, { or }, excludes the bound. You can omit the upper or lower
+     * bound to specify an open-ended range. When omitting a bound, you must
+     * use a curly brace.
+     *
+     * @param  string $field
+     * @param  Array $buckets
+     * @param  string $method
+     * @return StructuredQueryBuilder
+     */
+    public function facetBuckets($field, $buckets, $method = "filter")
+    {
+        $this->facets[$field] = [
+            'buckets' => $buckets,
+            'method'  => $method
+        ];
+    }
+
+    /**
+     * PRETTY
+     * Formats JSON output so it's easier to read.
+     *
+     * @return StructuredQueryBuilder
+     */
+    public function pretty()
+    {
+        $this->pretty = true;
         return $this;
     }
 
+    /**
+     * QUERY PARSER OPTIONS
+     * Configure options for the query parser specified in the q.parser
+     * parameter.	The options are specified as a JSON object, for example:
+     * q.options={defaultOperator: 'or', fields: ['title^5','description']}
+     *
+     * defaultOperator-The default operator used to combine individual terms
+     * in the search string. (and|or)
+     * defaultOperator: 'or'
+     *
+     * fields—An array of the fields to search when no fields are specified in
+     * a search.  You can specify a weight for each field to control the relative
+     * importance of each field when Amazon CloudSearch calculates relevance scores.
+     * fields: ['title^5','description']
+     *
+     * @param  string $key
+     * @param  mixed $value
+     * @return StructuredQueryBuilder
+     */
+    public function options($key, $value)
+    {
+        $this->options[$key] = $value;
+        return $this;
+    }
+
+    /**
+     * RETURN FIELDS
+     * The field and expression values to include in the response, specified as
+     * a comma-separated list. By default, a search response includes all return
+     * enabled fields (return=_all_fields). To return only the document IDs for
+     * the matching documents, specify return=_no_fields. To retrieve the
+     * relevance score calculated for each document, specify return=_score. You
+     * specify multiple return fields as a comma separated list. For example,
+     * return=title,_score returns just the title and relevance score of each
+     * matching document.
+     *
+     * @param  string $returnFields
+     * @return StructuredQueryBuilder
+     */
     public function returnFields($returnFields)
     {
         $this->returnFields = $returnFields;
         return $this;
     }
 
-    public function options($options)
+    /**
+     * SIZE
+     * The maximum number of search hits to return.
+     *
+     * @param  integer $size
+     * @return StructuredQueryBuilder
+     */
+    public function size($size)
     {
-        foreach(preg_split('/,\s|,/', $options) as $field)
-        {
-            $this->options['fields'][] = $field;
-        }
-
+        $this->size = $size;
         return $this;
     }
 
-    private function phrase($value, $field = null, $boost = null)
+    /**
+     * SORT
+     * A comma-separated list of fields or custom expressions to use to sort the
+     * search results. You must specify the sort direction (asc or desc) for
+     * each field. For example, sort=year desc,title asc. You can specify a
+     * maximum of 10 fields and expressions. To use a field to sort results, it
+     * must be sort enabled in the domain configuration. Array type fields
+     * cannot be used for sorting. If no sort parameter is specified, results
+     * are sorted by their default relevance scores in descending order:
+     * sort=_score desc. You can also sort by document ID (sort=_id) and
+     * version (sort=_version).
+     *
+     * @param  string $field
+     * @param  string $direction
+     * @return StructuredQueryBuilder
+     */
+    public function sort($field, $direction = 'asc')
     {
-        $phrase = "(phrase ";
-        if ($field) {
-            $phrase .= "field='{$field}' ";
-        }
-        if ($boost) {
-            $phrase .= "boost='{$boost}' ";
-        }
-        $phrase .= "'{$value}')";
-        $this->query[] = $phrase;
+        $this->sort = "{$field} {$direction}";
         return $this;
     }
 
-    private function near($value, $field = null, $distance = 3)
+    /**
+     * START
+     * The offset of the first search hit you want to return. You can specify
+     * either the start or cursor parameter in a request, they are mutually
+     * exclusive.
+     *
+     * @param  integer $start
+     * @return StructuredQueryBuilder
+     */
+    public function start($start)
     {
-        $near = "(near ";
-        if ($field) {
-            $near .= "field='{$field}' ";
-        }
-        if ($distance) {
-            $near .= "distance='{$distance}' ";
-        }
-        $near .= "'{$value}')";
-        $this->query[] = $near;
+        $this->start = $start;
         return $this;
     }
 
-    private function term($value, $field = null, $boost = null)
+    /**
+     * STATISTICS
+     * To get statistics for a field you use the stats.FIELD parameter. FIELD
+     * is the name of a facet-enabled numeric field. You specify an empty JSON
+     * object, stats.FIELD={}, to get all of the available statistics for the
+     * specified field. (The stats.FIELD parameter does not support any options;
+     * you must pass an empty JSON object.) You can request statistics for
+     * multiple fields in the same request.
+     *
+     * You can get statistics only for facet-enabled numeric fields: date,
+     * date-array, double, double-array, int, or int-array. Note that only the
+     * count, max, min, and missing statistics are returned for date and
+     * date-array fields.
+     *
+     * @param  string $field
+     * @return StructuredQueryBuilder
+     */
+    public function stats($field)
     {
-        $term = "(term ";
-        if ($field) {
-            $term .= "field='{$field}' ";
-        }
-        if ($boost) {
-            $term .= "boost='{$boost}' ";
-        }
-        $term .= "'{$value}')";
-        $this->query[] = $term;
-        return $this;
+        $this->stats[] = $field;
     }
 
-    private function prefix($value, $field = null, $boost = null)
-    {
-        $prefix = "(prefix ";
-        if ($field) {
-            $prefix .= "field='{$field}' ";
-        }
-        if ($boost) {
-            $prefix .= "boost='{$boost}' ";
-        }
-        $prefix .= "'{$value}')";
-        $this->query[] = $prefix;
-        return $this;
-    }
 
-    public function range($field, $min, $max)
-    {
-        $range = "(range field={$field} ";
-        if ($min and !$max) {
-            $value = "[{$min},}";
-        } elseif (!$min and $max) {
-            $value = "{,{$max}]";
-        } elseif ($min and $max) {
-            $value = "[{$min},{$max}]";
-        } else {
-            return;
-        }
-        $range .= "{$value})";
-        $this->query[] = $range;
-        return $this;
-    }
-
-    public function qAnd($block)
-    {
-        $builder = new $this;
-        $block($builder);
-        $and = "(and ".implode('', $builder->getQuery()).")";
-        $this->query[] = $and;
-        return $this;
-    }
-
-    public function qOr($block)
-    {
-        $builder = new $this;
-        $block($builder);
-        $or = "(or ".implode('', $builder->getQuery()).")";
-        $this->query[] = $or;
-        return $this;
-    }
-
-    public function qNot($block)
-    {
-        $builder = new $this;
-        $block($builder);
-        $not = "(not ".implode('', $builder->getQuery()).")";
-        $this->query[] = $not;
-        return $this;
-    }
-
-    private function filterPhrase($value, $field = null, $boost = null)
-    {
-        $phrase = "(phrase ";
-        if ($field) {
-            $phrase .= "field='{$field}' ";
-        }
-        if ($boost) {
-            $phrase .= "boost='{$boost}' ";
-        }
-        $phrase .= "'{$value}')";
-        $this->filterQuery[] = $phrase;
-        return $this;
-    }
-
-    private function filterTerm($value, $field = null, $boost = null)
-    {
-        $term = "(term ";
-        if ($field) {
-            $term .= "field='{$field}' ";
-        }
-        if ($boost) {
-            $term .= "boost='{$boost}' ";
-        }
-        $term .= "'{$value}')";
-        $this->filterQuery[] = $term;
-        return $this;
-    }
-
-    private function filterPrefix($value, $field = null, $boost = null)
-    {
-        $prefix = "(prefix ";
-        if ($field) {
-            $prefix .= "field='{$field}' ";
-        }
-        if ($boost) {
-            $prefix .= "boost='{$boost}' ";
-        }
-        $prefix .= "'{$value}')";
-        $this->filterQuery[] = $prefix;
-        return $this;
-    }
-
-    public function filterRange($field, $min, $max)
-    {
-        $range = "(range field={$field} ";
-        if ($min and !$max) {
-            $value = "[{$min},}";
-        } elseif (!$min and $max) {
-            $value = "{,{$max}]";
-        } elseif ($min and $max) {
-            $value = "[{$min},{$max}]";
-        } else {
-            return;
-        }
-        $range .= "{$value})";
-        $this->filterQuery[] = $range;
-        return $this;
-    }
-
-    public function filterAnd($block)
-    {
-        $builder = new $this;
-        $block($builder);
-        $and = "(and ".implode('', $builder->getFilterQuery()).")";
-        $this->filterQuery[] = $and;
-        return $this;
-    }
-
-    public function filterOr($block)
-    {
-        $builder = new $this;
-        $block($builder);
-        $or = "(or ".implode('', $builder->getFilterQuery()).")";
-        $this->filterQuery[] = $or;
-        return $this;
-    }
-
-    public function filterNot($block)
-    {
-        $builder = new $this;
-        $block($builder);
-        $not = "(not ".implode('', $builder->getFilterQuery()).")";
-        $this->filterQuery[] = $not;
-        return $this;
-    }
-
+    /**
+     * Special function to filter by distance (lat/lon)
+     *
+     * @param  string  $field
+     * @param  string  $lat
+     * @param  string  $lon
+     * @param  integer $radius
+     * @param  boolean $addExpr
+     * @return StructuredQueryBuilder
+     */
     public function latlon($field, $lat, $lon, $radius = 50, $addExpr = false)
     {
         // upper left bound
@@ -273,22 +376,23 @@ class StructuredQueryBuilder {
         $lat2 = $lat - ($radius/69);
         $lon2 = $lon + $radius/abs(cos(deg2rad($lat))*69);
 
-        //$statment = "{$field}:['{$lat1},{$lon1}','{$lat2},{$lon2}']";
-        //$this->filterQuery[] = $statment;
         $min = "'{$lat1},{$lon1}'";
         $max = "'{$lat2},{$lon2}'";
-        $this->filterRange($field, $min, $max);
+        $this->fq->range($field, $min, $max);
         if ($addExpr) {
             $this->addDistanceExpr($field, $lat, $lon);
         }
         return $this;
     }
 
-    public function expr($accessor, $expression)
-    {
-        $this->expressions[$accessor] = $expression;
-    }
-
+    /**
+     * Special function to add 'distance' expression
+     *
+     * @param string $field
+     * @param string $lat
+     * @param string $lon
+     * @return StructuredQueryBuilder      
+     */
     public function addDistanceExpr($field, $lat, $lon)
     {
         $expression = "haversin(".
@@ -300,60 +404,60 @@ class StructuredQueryBuilder {
         return $this;
     }
 
-    public function facet($field, $sort = "bucket", $size = 10)
-    {
-        $this->facets[$field] = [
-            'sort' => $sort,
-            'size' => $size
-        ];
-    }
 
-    public function facetBuckets($field, $buckets, $method = "filter")
-    {
-        $this->facets[$field] = [
-            'buckets' => $buckets,
-            'method'  => $method
-        ];
-    }
 
-    public function sort($field, $direction = 'asc')
-    {
-        $this->sort = "{$field} {$direction}";
-        return $this;
-    }
 
-    public function stats($field)
-    {
-        $this->stats[] = $field;
-    }
+
+
 
     public function buildStructuredQuery()
     {
         $structuredQuery;
-        $structuredQuery['queryParser'] = 'structured';
-        $structuredQuery['size'] = $this->size;
-        $structuredQuery['start'] = $this->start;
-        if ($this->query) {
-            $structuredQuery['query'] = $this->buildQuery();
+        // cursor
+        if ($this->cursor) {
+            $structuredQuery['cursor'] = $cursor;
         }
-        if ($this->filterQuery) {
-            $structuredQuery['filterQuery'] = $this->buildFilterQuery();
-        }
+        // expressions
         if ($this->expressions) {
             $structuredQuery['expr'] = json_encode($this->expressions);
         }
+        // facets
         if ($this->facets) {
             $structuredQuery['facet'] = json_encode($this->facets);
         }
-        if ($this->sort) {
-            $structuredQuery['sort'] = $this->sort;
+        // filter query
+        if ($this->fq->query) {
+            $structuredQuery['filterQuery'] = (string)$this->fq;
         }
-        if ($this->returnFields) {
-            $structuredQuery['return'] = $this->returnFields;
+        // pretty output
+        if (!is_null($this->pretty)) {
+            $structuredQuery['pretty'] = $this->pretty;
         }
+        // query
+        if ($this->q->query) {
+            $structuredQuery['query'] = (string)$this->q;
+        }
+        // options
         if ($this->options) {
             $structuredQuery['queryOptions'] = json_encode($this->options);
         }
+        // highlights
+        // partial
+        // parser
+        $structuredQuery['queryParser'] = 'structured';
+        // return
+        if ($this->returnFields) {
+            $structuredQuery['return'] = $this->returnFields;
+        }
+        // size
+        $structuredQuery['size'] = $this->size;
+        // sort
+        if ($this->sort) {
+            $structuredQuery['sort'] = $this->sort;
+        }
+        // start
+        $structuredQuery['start'] = $this->start;
+        // stats
         if ($this->stats) {
             $stats = [];
             foreach($this->stats as $statField) {
@@ -365,14 +469,5 @@ class StructuredQueryBuilder {
         return $structuredQuery;
     }
 
-    public function buildQuery()
-    {
-        return "(and ".implode('', $this->query).")";
-    }
-
-    public function buildFilterQuery()
-    {
-        return "(and ".implode('', $this->filterQuery).")";
-    }
 
 }
