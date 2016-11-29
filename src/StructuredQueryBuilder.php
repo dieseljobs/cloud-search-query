@@ -126,7 +126,7 @@ class StructuredQueryBuilder {
      */
     public function getQuery()
     {
-        return $this->q->getQuery;
+        return $this->q->getQuery();
     }
 
     /**
@@ -136,7 +136,7 @@ class StructuredQueryBuilder {
      */
     public function getFilterQuery()
     {
-        return $this->fq->getQuery;
+        return $this->fq->getQuery();
     }
 
     /**
@@ -391,7 +391,7 @@ class StructuredQueryBuilder {
      * @param string $field
      * @param string $lat
      * @param string $lon
-     * @return StructuredQueryBuilder      
+     * @return StructuredQueryBuilder
      */
     public function addDistanceExpr($field, $lat, $lon)
     {
