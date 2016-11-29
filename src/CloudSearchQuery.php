@@ -484,12 +484,12 @@ class CloudSearchQuery
 
     public function getQuery()
     {
-        return $this->builder->query;
+        return $this->builder->getQuery();
     }
 
     public function getFilterQuery()
     {
-        return $this->builder->filterQuery;
+        return $this->builder->getFilterQuery();
     }
 
     public function getFacets()
