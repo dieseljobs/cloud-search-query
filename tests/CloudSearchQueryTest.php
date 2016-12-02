@@ -17,6 +17,15 @@ class CloudSearchQueryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('200', $results->status);
     }
 
+    public function testItSearchWithQuotesInParams()
+    {
+        $query = new CloudSearchQuery($this->endpoint);
+        $query->term("TSE INTERNATIONAL", 'make')
+                ->term('82" HEAVY DUTY TILLER');
+        $results = $query->get();
+        $this->assertEquals('200', $results->status);
+    }
+
     public function testItSearchesWithNearSearch()
     {
         $query = new CloudSearchQuery($this->endpoint);
