@@ -1,6 +1,6 @@
 <?php
 
-namespace Kazak\CloudSearchQuery;
+namespace TheLHC\CloudSearchQuery;
 
 use Aws\CloudSearchDomain\CloudSearchDomainClient;
 
@@ -41,8 +41,9 @@ class CloudSearchQuery
      *
      * @param string $endpoint
      */
-    public function __construct($endpoint)
+    public function __construct()
     {
+        $endpoint = config('cloud_search_query.endpoint');
         $client = CloudSearchDomainClient::factory(
             [
                 'version'  => '2013-01-01',

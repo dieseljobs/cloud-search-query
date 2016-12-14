@@ -1,6 +1,6 @@
 <?php
 
-namespace Kazak\CloudSearchQuery;
+namespace TheLHC\CloudSearchQuery;
 
 use Aws\Result;
 
