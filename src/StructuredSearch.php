@@ -31,6 +31,7 @@ class StructuredSearch
         foreach($args as $key => $value) {
             if (gettype($value) == "string") {
                 $cleanValue = preg_replace("#'#", "\\'", $value);
+                $cleanValue = preg_replace('#\\\#i', "\\\\\\", $cleanValue);
                 $args[$key] = $cleanValue;
             }
         }
