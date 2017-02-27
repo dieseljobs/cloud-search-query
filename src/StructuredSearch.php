@@ -30,8 +30,9 @@ class StructuredSearch
         // escape string arguments
         foreach($args as $key => $value) {
             if (gettype($value) == "string") {
-                $cleanValue = preg_replace("#'#", "\\'", $value);
+                $cleanValue = $value;
                 $cleanValue = preg_replace('#\\\#i', "\\\\\\", $cleanValue);
+                $cleanValue = preg_replace("#'#", "\\'", $cleanValue);
                 $args[$key] = $cleanValue;
             }
         }
