@@ -4,6 +4,7 @@ namespace TheLHC\CloudSearchQuery;
 
 use Aws\CloudSearchDomain\CloudSearchDomainClient;
 use Aws\CloudSearchDomain\Exception\CloudSearchDomainException;
+use Cache;
 
 class StructuredQueryBuilder {
 
@@ -404,18 +405,17 @@ class StructuredQueryBuilder {
         return $this;
     }
 
-
-
-
-
-
-
+    /**
+     * Build the structured query array to send to AWS search
+     *
+     * @return array
+     */
     public function buildStructuredQuery()
     {
         $structuredQuery;
         // cursor
         if ($this->cursor) {
-            $structuredQuery['cursor'] = $cursor;
+            $structuredQuery['cursor'] = $this->cursor;
         }
         // expressions
         if ($this->expressions) {
@@ -455,8 +455,14 @@ class StructuredQueryBuilder {
         if ($this->sort) {
             $structuredQuery['sort'] = $this->sort;
         }
-        // start
-        $structuredQuery['start'] = $this->start;
+        // start or cursor
+        if ($this->start >= 10000 and is_null($this->cursor)) {
+            $this->cursor = $this->buildCursor();
+        }
+        if (!$this->cursor) {
+            $structuredQuery['start'] = $this->start;
+        }
+
         // stats
         if ($this->stats) {
             $stats = [];
@@ -467,6 +473,103 @@ class StructuredQueryBuilder {
             $structuredQuery['stats'] = $stats;
         }
         return $structuredQuery;
+    }
+
+    /**
+     * Auto setup cursor for query exceeding max 10000 offset
+     *
+     * @return string
+     */
+    private function buildCursor()
+    {
+        // check if this query has already been cached
+        // if found in cache, return cursor
+        $hash = $this->toHash();
+        if ($cursor = Cache::tags(['cursors'])->get($hash)) {
+            return $cursor;
+        }
+        // not found, so check if there's a cursor for the previous page
+        $prevBuilder = clone $this;
+        $prevBuilder->start($this->start - $this->size);
+        if ($prevCursor = Cache::tags(['cursors'])->get($prevBuilder->toHash())) {
+            // found it, but now we'll have to fetch another cursor for the
+            // current search request
+            $cursor = $this->fetchCursor(
+                $this, //original query
+                $this->size, //just a page worth remaining
+                $this->size, //grab a page worth
+                $prevCursor, //the previous cursor
+                ($this->start - $this->size) //completed all but a page
+            );
+            return $cursor;
+        }
+        // we'll run recursive cursor method to build cursor hashes from the start value
+        return $this->fetchCursor($this, $this->start);
+    }
+
+    /**
+     * Run cloudsearch query to retrieve a cursor value
+     *
+     * @param  StructuredQueryBuilder  $originalBuilder
+     * @param  integer  $remaining
+     * @param  integer $size
+     * @param  string  $seekCursor
+     * @param  integer $completed
+     * @return string
+     */
+    private function fetchCursor(
+        $originalBuilder,
+        $remaining,
+        $size = 10000,
+        $seekCursor = 'initial',
+        $completed = 0
+    )
+    {
+        // determine what we are seeking
+        $seekBuilder = clone $originalBuilder;
+        $seekBuilder->start($completed + $size);
+        // first check in cache
+        if (Cache::tags(['cursors'])->has($seekBuilder->toHash())) {
+            $cursor = Cache::tags(['cursors'])->get($seekBuilder->toHash());
+        } else {
+            // go to cloudsearch
+            $cursorQuery = clone $seekBuilder;
+            $cursorQuery->returnFields('_no_fields')
+                        ->cursor($seekCursor)
+                        ->size($size);
+            // unset facets
+            $cursorQuery->facets = [];
+            // get cursor from cloudsearch and set to cache
+            $cursorResults = (new CloudSearchQuery($cursorQuery))->get();
+            $cursor = $cursorResults->cursor;
+            Cache::tags(['cursors'])->forever($seekBuilder->toHash(), $cursor);
+        }
+        // determine if we need to get more cursors
+        $remainingSize = ($remaining - $size);
+        if ($remainingSize > 0) {
+            /* go get it */
+            return $this->fetchCursor(
+                $originalBuilder,
+                $remainingSize,
+                ($remainingSize < 10000) ? $remainingSize : 10000,
+                $cursor,
+                ($completed + $size)
+            );
+        } else {
+            /* We arrived, return the cursor */
+            return $cursor;
+        }
+    }
+
+    /**
+     * Create unique hash for builder
+     *
+     * @return string
+     */
+    private function toHash()
+    {
+        $hash = hash('md4', json_encode($this));
+        return $hash;
     }
 
 

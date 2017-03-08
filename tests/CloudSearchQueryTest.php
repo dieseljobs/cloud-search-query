@@ -133,4 +133,15 @@ class CloudSearchQueryTest extends TestCase
         $this->assertEquals(true, is_array($results->facets));
     }
 
+    public function testItCatchesMaxStart()
+    {
+        $query = $this->app->make('TheLHC\CloudSearchQuery\CloudSearchQuery');
+        $query->size(10)
+              ->start(15000)
+              ->matchall()
+              ->pretty();
+        $results = $query->get();
+        dd($results);
+    }
+
 }

@@ -39,9 +39,9 @@ class CloudSearchQuery
      * Create new instance and CloudSearchDomainClient from endpoint
      * constructs new StructuredQueryBuilder instance with client
      *
-     * @param string $endpoint
+     * @param mixed $query
      */
-    public function __construct()
+    public function __construct($query = null)
     {
         $endpoint = config('cloud_search_query.endpoint');
         $client = CloudSearchDomainClient::factory(
@@ -51,7 +51,7 @@ class CloudSearchQuery
             ]
         );
         $this->client = $client;
-        $this->builder = new StructuredQueryBuilder();
+        $this->builder = ($query) ? $query : new StructuredQueryBuilder();
     }
 
     /**

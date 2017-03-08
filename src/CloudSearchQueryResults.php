@@ -11,6 +11,7 @@ class CloudSearchQueryResults
     public $status;
     public $found;
     public $start;
+    public $cursor;
     public $hits;
     public $facets;
     public $stats;
@@ -26,6 +27,7 @@ class CloudSearchQueryResults
             'status' => $this->status,
             'found'  => $this->found,
             'start'  => $this->start,
+            'cursor' => $this->cursor,
             'hits'   => $this->hits,
             'facets' => $this->facets
         ];
@@ -38,6 +40,9 @@ class CloudSearchQueryResults
         if ($this->status == '200') {
           $this->found = $this->awsResult['hits']['found'];
           $this->start = $this->awsResult['hits']['start'];
+          if (isset($this->awsResult['hits']['cursor'])) {
+              $this->cursor = $this->awsResult['hits']['cursor'];
+          }
           $this->mapHits();
           if ($this->awsResult['facets']) {
               // we should map these out better
