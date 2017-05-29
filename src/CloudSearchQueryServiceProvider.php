@@ -28,7 +28,9 @@ class CloudSearchQueryServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/cloud_search_query.php', 'cloud_search_query');
 
         $this->app->bind(CloudSearchQuery::class, function ($app) {
-            return new CloudSearchQuery();
+            return new CloudSearchQuery(
+                $app['config']->get('cloud_search_query')
+            );
         });
     }
 

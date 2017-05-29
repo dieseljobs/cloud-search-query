@@ -39,11 +39,15 @@ class CloudSearchQuery
      * Create new instance and CloudSearchDomainClient from endpoint
      * constructs new StructuredQueryBuilder instance with client
      *
-     * @param mixed $query
+     * @param array $config
      */
-    public function __construct($query = null)
+    public function __construct($config)
     {
-        $endpoint = config('cloud_search_query.endpoint');
+        if (!isset($config['foobar'])) {
+            throw new \Exception(
+                "Missing parameter 'endpoint' passed to TheLHC\CloudSearchQuery\CloudSearchQuery"
+            );
+        }
         $client = CloudSearchDomainClient::factory(
             [
                 'version'  => '2013-01-01',
