@@ -141,7 +141,8 @@ class CloudSearchQueryTest extends TestCase
               ->matchall()
               ->pretty();
         $results = $query->get();
-        dd($results);
+        $this->assertEquals('200', $results->status);
+        $this->assertEquals(true, is_array($results->hits));
     }
 
 }

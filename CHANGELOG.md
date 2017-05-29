@@ -1,3 +1,9 @@
+## [2.2.2] - 2017-05-29
+### Changed
+- Pass config as to CloudSearchQuery constructor.  @aaronkaz
+- Pass CloudSearchQuery instance as parent to Builder.  @aaronkaz
+
+
 ## [2.2.0] - 2017-03-08
 ### Added
 - Add cursor building for queries exceeding 10000 offset limit.  @aaronkaz

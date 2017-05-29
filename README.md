@@ -13,12 +13,14 @@ CloudSearchQuery is currently a repository package only.  In `composer.json` add
     "require": {
         "aaron-kaz/cloud-search-query": "dev-master"
     },
-    
+
 
 ## Basic Usage ##
 Initialize a query object with a valid CloudSearch full URI endpoint
 
-    $query = new CloudSearchQuery('http://search-yourdomain.us-east-1.cloudsearch.amazonaws.com');
+    $query = new CloudSearchQuery([
+        'endpoint' => 'http://search-yourdomain.us-east-1.cloudsearch.amazonaws.com'
+    ]);
 
 You can chain query methods like so
 

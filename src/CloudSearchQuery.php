@@ -6,6 +6,12 @@ use Aws\CloudSearchDomain\CloudSearchDomainClient;
 
 class CloudSearchQuery
 {
+    /**
+     * Configuration array
+     *
+     * @var Array
+     */
+    public $config;
 
     /**
      * CloudSearchDomainClient factory instance
@@ -40,22 +46,24 @@ class CloudSearchQuery
      * constructs new StructuredQueryBuilder instance with client
      *
      * @param array $config
+     * @param mixed $query
      */
-    public function __construct($config)
+    public function __construct($config, $query = null)
     {
-        if (!isset($config['foobar'])) {
+        if (!isset($config["endpoint"])) {
             throw new \Exception(
                 "Missing parameter 'endpoint' passed to TheLHC\CloudSearchQuery\CloudSearchQuery"
             );
         }
+        $this->config = $config;
         $client = CloudSearchDomainClient::factory(
             [
                 'version'  => '2013-01-01',
-                'endpoint' => $endpoint
+                'endpoint' => $config["endpoint"]
             ]
         );
         $this->client = $client;
-        $this->builder = ($query) ? $query : new StructuredQueryBuilder();
+        $this->builder = ($query) ? $query : new StructuredQueryBuilder($this);
     }
 
     /**

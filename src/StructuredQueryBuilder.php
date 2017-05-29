@@ -9,6 +9,13 @@ use Cache;
 class StructuredQueryBuilder {
 
     /**
+     * Parent CloudSearchQuery if passed
+     *
+     * @var CloudSearchQuery
+     */
+    private $parent;
+
+    /**
      * Cursor value
      *
      * @var string
@@ -114,8 +121,9 @@ class StructuredQueryBuilder {
     /**
      * Create new instance
      */
-    public function __construct()
+    public function __construct($parent = null)
     {
+        if ($parent) $this->parent = $parent;
         $this->q = new StructuredSearch();
         $this->fq = new StructuredSearch();
     }
@@ -540,7 +548,8 @@ class StructuredQueryBuilder {
             // unset facets
             $cursorQuery->facets = [];
             // get cursor from cloudsearch and set to cache
-            $cursorResults = (new CloudSearchQuery($cursorQuery))->get();
+            // get parent config to pass to new CloudSearchQuery instance
+            $cursorResults = (new CloudSearchQuery($this->parent->config, $cursorQuery))->get();
             $cursor = $cursorResults->cursor;
             Cache::tags(['cursors'])->forever($seekBuilder->toHash(), $cursor);
         }
