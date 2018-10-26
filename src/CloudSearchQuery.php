@@ -457,11 +457,13 @@ class CloudSearchQuery
      * @param  string  $lat
      * @param  string  $lon
      * @param  integer $radius
+     * @param  bool    $addExpr
+     * @param  string  $units
      * @return CloudSearchQuery
      */
-    public function latlon($field, $lat, $lon, $radius = 50, $addExpr = false)
+    public function latlon($field, $lat, $lon, $radius = 50, $addExpr = false, $units = 'mi')
     {
-        $this->builder->latlon($field, $lat, $lon, $radius, $addExpr);
+        $this->builder->latlon($field, $lat, $lon, $radius, $addExpr, $units);
         return $this;
     }
 
