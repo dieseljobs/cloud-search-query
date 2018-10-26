@@ -374,16 +374,18 @@ class StructuredQueryBuilder {
      * @param  string  $lon
      * @param  integer $radius
      * @param  boolean $addExpr
+     * @param  string  $units
      * @return StructuredQueryBuilder
      */
-    public function latlon($field, $lat, $lon, $radius = 50, $addExpr = false)
+    public function latlon($field, $lat, $lon, $radius = 50, $addExpr = false, $units = 'mi')
     {
+        $boundConstant = ($units === 'mi') ? 69 : 111;
         // upper left bound
-        $lat1 = $lat + ($radius/69);
-        $lon1 = $lon - $radius/abs(cos(deg2rad($lat))*69);
+        $lat1 = $lat + ($radius/$boundConstant);
+        $lon1 = $lon - $radius/abs(cos(deg2rad($lat))*$boundConstant);
         // lower right bound
-        $lat2 = $lat - ($radius/69);
-        $lon2 = $lon + $radius/abs(cos(deg2rad($lat))*69);
+        $lat2 = $lat - ($radius/$boundConstant);
+        $lon2 = $lon + $radius/abs(cos(deg2rad($lat))*$boundConstant);
 
         $min = "'{$lat1},{$lon1}'";
         $max = "'{$lat2},{$lon2}'";
