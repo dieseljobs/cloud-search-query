@@ -67,6 +67,9 @@ class CloudSearchQueryResults
                     $mappedHit[$key] = $field[0];
                 }
             }
+            if (isset($hit['exprs'])) {
+                $mappedHit = array_merge($mappedHit, $hit['exprs']);
+            }
             $hits[] = $mappedHit;
         }
         $this->hits = $hits;
