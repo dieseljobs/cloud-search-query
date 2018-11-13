@@ -67,11 +67,8 @@ class CloudSearchQueryResults
                     $mappedHit[$key] = $field[0];
                 }
             }
-            if (isset($hit['exprs']['match']) &&
-                isset($hit['exprs']['distance'])
-            ) {
-                $mappedHit['match'] = $hit['exprs']['match'];
-                $mappedHit['distance'] = $hit['exprs']['distance'];
+            if (isset($hit['exprs'])) {
+                $mappedHit = array_merge($mappedHit, $hit['exprs']);
             }
             $hits[] = $mappedHit;
         }
