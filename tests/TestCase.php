@@ -33,7 +33,15 @@ class TestCase extends BaseTestCase
         $dotenv->load();
         $app['config']->set(
             'cloud_search_query.endpoint',
-            getenv('ENDPOINT')
+            getenv('AWS_CLOUDSEARCH_ENDPOINT')
+        );
+        $app['config']->set(
+            'cloud_search_query.key',
+            getenv('AWS_ACCESS_KEY_ID')
+        );
+        $app['config']->set(
+            'cloud_search_query.secret',
+            getenv('AWS_SECRET_ACCESS_KEY')
         );
     }
 
