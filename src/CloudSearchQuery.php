@@ -56,12 +56,19 @@ class CloudSearchQuery
             );
         }
         $this->config = $config;
-        $client = CloudSearchDomainClient::factory(
-            [
-                'version'  => '2013-01-01',
-                'endpoint' => $config["endpoint"]
-            ]
-        );
+
+        $csConfig = [
+            'version'  => '2013-01-01',
+            'endpoint' => $config["endpoint"]
+        ];
+
+        if (!empty($config['key']) && !empty($config['secret'])) {
+            $csConfig['credentials'] = [
+                'key' => $config['key'],
+                'secret' => $config['secret']
+            ];
+        }
+        $client = CloudSearchDomainClient::factory($csConfig);
         $this->client = $client;
         $this->builder = ($query) ? $query : new StructuredQueryBuilder($this);
     }
