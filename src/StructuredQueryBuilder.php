@@ -139,6 +139,19 @@ class StructuredQueryBuilder {
     }
 
     /**
+     * Alias to add raw structured query string to query
+     * 
+     * @param string
+     * @return this
+     */
+    public function addRawQuery($val)
+    {
+        $this->q->addRawQuery($val);
+
+        return $this;
+    }
+
+    /**
      * Alias to get structured filter query
      *
      * @return array
@@ -146,6 +159,19 @@ class StructuredQueryBuilder {
     public function getFilterQuery()
     {
         return $this->fq->getQuery();
+    }
+
+    /**
+     * Alias to add raw structured query string to query
+     * 
+     * @param string
+     * @return this
+     */
+    public function addRawFilterQuery($val)
+    {
+        $this->fq->addRawQuery($val);
+
+        return $this;
     }
 
     /**

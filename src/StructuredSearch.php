@@ -63,6 +63,19 @@ class StructuredSearch
     }
 
     /**
+     * Add raw structured query string to query 
+     * 
+     * @param string
+     * @return this
+     */
+    public function addRawQuery($val)
+    {
+        $this->query[] = $val;
+
+        return $this;
+    }
+
+    /**
      * AND OPERATOR
      * Includes a document only if it matches all of the specified expressions.
      * (Boolean AND operator.) The expressions can contain any of the structured

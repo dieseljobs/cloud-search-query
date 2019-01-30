@@ -509,9 +509,23 @@ class CloudSearchQuery
         return $this->builder->getQuery();
     }
 
+    public function addRawQuery($val)
+    {
+        $this->builder->addRawQuery($val);
+
+        return $this;
+    }
+
     public function getFilterQuery()
     {
         return $this->builder->getFilterQuery();
+    }
+
+    public function addRawFilterQuery($val)
+    {
+        $this->builder->addRawFilterQuery($val);
+
+        return $this;
     }
 
     public function getFacets()
