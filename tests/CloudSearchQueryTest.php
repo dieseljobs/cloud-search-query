@@ -145,4 +145,20 @@ class CloudSearchQueryTest extends TestCase
         $this->assertEquals(true, is_array($results->hits));
     }
 
+    public function testItcanAddRawQuery()
+    {
+        $val = "(term field='category' 'Construction')";
+        $query = $this->app->make('TheLHC\CloudSearchQuery\CloudSearchQuery');
+        $query->addRawQuery($val);
+        $this->assertEquals($val, $query->getQuery()[0]);
+    }
+
+    public function testItcanAddRawFilterQuery()
+    {
+        $val = "(term field='category' 'Construction')";
+        $query = $this->app->make('TheLHC\CloudSearchQuery\CloudSearchQuery');
+        $query->addRawFilterQuery($val);
+        $this->assertEquals($val, $query->getFilterQuery()[0]);
+    }
+
 }
